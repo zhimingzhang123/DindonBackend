@@ -100,7 +100,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'Dindon',
         'USER': 'root',
-        'PASSWORD': 'newpassword',
+        'PASSWORD': '321',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
