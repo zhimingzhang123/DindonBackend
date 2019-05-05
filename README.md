@@ -8,7 +8,7 @@
 
 ### 框架
 
-![Architecture](https://fries-image.oss-cn-hangzhou.aliyuncs.com/dindon/Architecture.png)
+![Architecture](https://fries-image.oss-cn-hangzhou.aliyuncs.com/dindon/architecture.png)
 
 ### 工具及环境
 
