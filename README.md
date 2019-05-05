@@ -4,11 +4,11 @@
 
 ### 需求说明
 
-<img src="./image/demands.png">
+![Demonds](https://fries-image.oss-cn-hangzhou.aliyuncs.com/dindon/demands.png)
 
 ### 框架
 
-<img src="./image/Architecture.png">
+![Architecture](https://fries-image.oss-cn-hangzhou.aliyuncs.com/dindon/Architecture.png)
 
 ### 工具及环境
 
@@ -56,5 +56,4 @@
 
 - Ubuntu 16.04 LTS
 
-<img src="./image/tools.png">
-
+![Tools](https://fries-image.oss-cn-hangzhou.aliyuncs.com/dindon/tools.png)
