@@ -1,5 +1,4 @@
 .idea
 db.sqlite3
 */migrations
-DinDonBackend/__pycache__/
-__pycache__
+*.py[cod]
