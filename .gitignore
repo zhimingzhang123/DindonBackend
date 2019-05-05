@@ -2,3 +2,5 @@
 db.sqlite3
 */migrations
 *.py[cod]
+将删除 DinDonBackend/__pycache__/
+将删除 templates/
