@@ -46,11 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'Dishes.apps.DishesConfig',
-    'Orders.apps.OrdersConfig',
-    'Tables.apps.TablesConfig',
-    'Users.apps.UsersConfig',
-    'Announcements.apps.AnnouncementsConfig'
+    'apps.Dishes.apps.DishesConfig',
+    'apps.Orders.apps.OrdersConfig',
+    'apps.Tables.apps.TablesConfig',
+    'apps.Users.apps.UsersConfig',
+    'apps.Announcements.apps.AnnouncementsConfig'
 ]
 
 MIDDLEWARE = [
@@ -99,14 +99,15 @@ WSGI_APPLICATION = 'DinDonBackend.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'Dindon',
-    #     'USER': 'root',
-    #     'PASSWORD': 'newpassword',
-    #     'HOST': '127.0.0.1',
-    #     'PORT': '3306',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Dindon',
+        'USER': 'root',
+        'PASSWORD': '321',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {'init_command': 'SET default_storage_engine=INNODB'}  # 设置第三方登录库需要用到INNODB
+    }
     # ,
     # # 多个数据库
     # # 第二个数据库
@@ -119,11 +120,11 @@ DATABASES = {
     #     'PORT': '3306',
     # }
     # ,
-    # # 第三个数据库
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    # # # 第三个数据库
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
 }
 
 # Password validation
