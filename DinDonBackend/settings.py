@@ -32,7 +32,7 @@ SECRET_KEY = 'etg2)8%62c1bz555@71%x$r6@_l^5i0dg+qhe1^aia#k6gg)4x'
 DEBUG = True
 
 # 域名访问权限
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*",]
 
 # App列表
 # Application definition
@@ -147,7 +147,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'zh-cn'
+LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'UTC'
 
