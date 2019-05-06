@@ -3,3 +3,9 @@ db.sqlite3
 *.py[cod]
 将删除 DinDonBackend/__pycache__/
 将删除 templates/
+将删除 Announcements/__pycache__/
+将删除 Dishes/__pycache__/
+将删除 Orders/__pycache__/
+将删除 Tables/__pycache__/
+将删除 Users/__pycache__/
+将删除 __pycache__/
