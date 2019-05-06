@@ -44,6 +44,7 @@ class Order(models.Model):
 
 class OrderDish(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="订单编号")
+
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name="菜品")
 
     dishNum = models.IntegerField(verbose_name="下单数量")

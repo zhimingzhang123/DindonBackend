@@ -18,5 +18,9 @@ class Dish(models.Model):
     dishAddTime = models.DateTimeField(verbose_name="菜品添加时间", auto_now_add=True, null=True)
 
     def __str__(self):
-        description = "菜品编号:{}\n菜品名称:{}\n".format(self.dishId, self.dishName)
+        description = "菜品编号: {} 菜品名称: {}".format(self.dishId, self.dishName)
         return description
+
+    class Meta:
+        verbose_name = "菜品"
+        verbose_name_plural = "菜品"

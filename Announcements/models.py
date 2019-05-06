@@ -16,5 +16,9 @@ class Announcement(models.Model):
     announcementModifyUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        description = "公告编号:{}\n".format(self.announcementId)
+        description = "公告编号: {}".format(self.announcementId)
         return description
+
+    class Meta:
+        verbose_name_plural = "公告"
+        verbose_name = "公告"
