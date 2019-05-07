@@ -33,6 +33,8 @@ class Order(models.Model):
 
     orderPrice = models.FloatField(verbose_name="订单金额")
 
+    orderScript = models.TextField(verbose_name="订单留言")
+
     orderStatus = models.IntegerField(verbose_name="订单状态", default=OrderStatus.Ordered)
 
     orderDishes = models.ManyToManyField(Dish, verbose_name="订单菜品", through="OrderDish")
