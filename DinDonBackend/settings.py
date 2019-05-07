@@ -32,7 +32,9 @@ SECRET_KEY = 'etg2)8%62c1bz555@71%x$r6@_l^5i0dg+qhe1^aia#k6gg)4x'
 DEBUG = True
 
 # 域名访问权限
-ALLOWED_HOSTS = ["*",]
+ALLOWED_HOSTS = ["*"]
+
+AUTH_USER_MODEL = 'Users.User'
 
 # App列表
 # Application definition

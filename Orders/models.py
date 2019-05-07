@@ -31,7 +31,7 @@ class Order(models.Model):
 
     orderConfirmTime = models.DateTimeField(verbose_name="确认时间")
 
-    orderPrice = models.IntegerField(verbose_name="订单价格")
+    orderPrice = models.IntegerField(verbose_name="订单金额")
 
     orderStatus = models.IntegerField(verbose_name="订单状态", default=OrderStatus.Ordered)
 
