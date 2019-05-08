@@ -9,6 +9,8 @@ class Dish(models.Model):
 
     dishPrice = models.IntegerField(verbose_name="菜品价格")
 
+    dishType = models.CharField(verbose_name="菜品分类", max_length=30, null=True)
+
     dishStock = models.IntegerField(verbose_name="菜品库存", default=999)
 
     dishPicture = models.TextField(verbose_name="菜品图片", null=True)

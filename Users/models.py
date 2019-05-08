@@ -22,5 +22,5 @@ class User(AbstractBaseUser):
     userType = models.IntegerField(default=UserType.Customer, verbose_name="用户类型")
 
     def __str__(self):
-        description = "用户编号:{}\n用户手机号码:{}\n".format(self.userId, self.userPhoneNumber)
+        description = "用户编号: {} 用户手机号码: {}".format(self.userId, self.userPhoneNumber)
         return description
