@@ -2,6 +2,12 @@
 
 自由点，即刻享受。
 
+### 安装依赖
+> pip install djangorestframework  
+pip install django-cors-headers  
+pip install markdown  
+pip install django-filter
+
 ### 需求说明
 
 ![Demonds](https://fries-image.oss-cn-hangzhou.aliyuncs.com/dindon/demands.png)

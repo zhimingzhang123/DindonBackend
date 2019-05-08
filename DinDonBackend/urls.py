@@ -20,8 +20,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('dishes/', include('Dishes.urls')),
-    # path('announcements/', include('Announcements.urls')),
+    path('announcements/', include('Announcements.urls')),
     # path('orders/', include('Orders.urls')),
-    # path('tables/', include('Tables.urls')),
+    path('tables/', include('Tables.urls')),
     # path('users/', include('Users.urls'))
 ]

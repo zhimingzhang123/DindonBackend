@@ -1,5 +1,7 @@
 from django.urls import path
 
+from Tables.views import TableListView
+
 urlpatterns = [
-    path('',),
+    path('', TableListView.as_view()),
 ]
