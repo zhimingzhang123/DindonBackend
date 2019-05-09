@@ -13,10 +13,10 @@ class Announcement(models.Model):
 
     announcementModifyTime = models.DateTimeField(auto_now=True, verbose_name="公告修改时间")
 
-    announcementModifyUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    announcementModifyUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name="修改用户")
 
     def __str__(self):
-        description = "公告编号: {}".format(self.announcementId)
+        description = "公告编号: {}　公告内容：　{}".format(self.announcementId,self.announcementContent)
         return description
 
     class Meta:

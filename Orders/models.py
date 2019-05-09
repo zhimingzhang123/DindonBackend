@@ -21,7 +21,7 @@ class Order(models.Model):
 
     orderTable = models.ForeignKey(DiningTable, on_delete=models.CASCADE, verbose_name="订单餐桌")
 
-    orderTime = models.DateTimeField(verbose_name="下单时间")
+    orderTime = models.DateTimeField(verbose_name="下单时间",auto_now_add=True)
 
     orderPayTime = models.DateTimeField(verbose_name="付款时间")
 
@@ -33,7 +33,7 @@ class Order(models.Model):
 
     orderPrice = models.FloatField(verbose_name="订单金额")
 
-    orderScript = models.TextField(verbose_name="订单留言")
+    orderScript = models.TextField(verbose_name="订单留言", null=True)
 
     orderStatus = models.IntegerField(verbose_name="订单状态", default=OrderStatus.Ordered)
 
@@ -42,6 +42,10 @@ class Order(models.Model):
     def __str__(self):
         description = "订单编号:{}\n".format(self.orderId)
         return description
+
+    class Meta:
+        verbose_name = "订单"
+        verbose_name_plural = verbose_name
 
 
 class OrderDish(models.Model):

@@ -34,7 +34,7 @@ DEBUG = True
 # 域名访问权限
 ALLOWED_HOSTS = ["*"]
 
-# AUTH_USER_MODEL = 'Users.User'
+AUTH_USER_MODEL = 'Users.User'
 
 # App列表
 # Application definition
@@ -101,14 +101,14 @@ WSGI_APPLICATION = 'DinDonBackend.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Dindon',
-        'USER': 'root',
-        'PASSWORD': '321',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'Dindon',
+    #     'USER': 'root',
+    #     'PASSWORD': '321',
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '3306',
+    # }
     # ,
     # # 多个数据库
     # # 第二个数据库
@@ -121,11 +121,11 @@ DATABASES = {
     #     'PORT': '3306',
     # }
     # ,
-    # # 第三个数据库
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
+    # 第三个数据库
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
 
 # Password validation

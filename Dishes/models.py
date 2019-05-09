@@ -7,7 +7,7 @@ class Dish(models.Model):
 
     dishName = models.CharField(max_length=50, verbose_name="菜品名称")
 
-    dishPrice = models.IntegerField(verbose_name="菜品价格")
+    dishPrice = models.FloatField(verbose_name="菜品价格")
 
     dishType = models.CharField(verbose_name="菜品分类", max_length=30, null=True)
 

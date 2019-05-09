@@ -12,3 +12,7 @@ class DiningTable(models.Model):
     def __str__(self):
         description = "餐桌编号:{}\n餐桌类别{}\n".format(self.tableId, self.tableCategory)
         return description
+
+    class Meta:
+        verbose_name = "餐桌"
+        verbose_name_plural = verbose_name

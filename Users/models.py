@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
@@ -12,21 +12,21 @@ class UserType:
 
 
 # Create your models here.
-class User(AbstractBaseUser):
-    userId = models.AutoField(primary_key=True, verbose_name="用户编号")
+class User(AbstractUser):
 
-    userName = models.CharField(max_length=64, verbose_name="用户名")
+    userPhoneNumber = models.CharField(max_length=11, verbose_name="用户手机号码", unique=True)
 
-    userPhoneNumber = models.CharField(max_length=20, verbose_name="用户手机号码", unique=True)
-
-    userCreateTime = models.DateTimeField(auto_now_add=True, null=True, verbose_name="用户创建时间")
+    userCreateTime = models.DateTimeField(auto_now_add=True, verbose_name="用户创建时间")
 
     userType = models.IntegerField(default=UserType.Customer, verbose_name="用户类型")
 
     def __str__(self):
-        description = "用户编号: {} 用户手机号码: {}".format(self.userId, self.userPhoneNumber)
+        description = "用户: {}".format(self.username)
         return description
 
+    class Meta:
+        verbose_name = "用户"
+        verbose_name_plural = verbose_name
 # class VerifyCode(models.Model):
 #     """
 #     短信验证码
