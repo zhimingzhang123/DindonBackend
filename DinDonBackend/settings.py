@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'Orders.apps.OrdersConfig',
     'Tables.apps.TablesConfig',
     'Users.apps.UsersConfig',
-    'Announcements.apps.AnnouncementsConfig'
+    'Announcements.apps.AnnouncementsConfig',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,17 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'DinDonBackend.urls'
+# DRF的一些配置
+REST_FRAMEWORK = {
+    # 分页器设置
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100,
+    # 过滤器设置
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',
+                                'rest_framework.filters.SearchFilter',
+                                'rest_framework.filters.OrderingFilter'
+                                )
+}
 
 TEMPLATES = [
     {
@@ -149,12 +161,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-#设置时区
-LANGUAGE_CODE = 'zh-hans'  #中文支持，django1.8以后支持；1.8以前是zh-cn
+# 设置时区
+LANGUAGE_CODE = 'zh-hans'  # 中文支持，django1.8以后支持；1.8以前是zh-cn
 TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = True
 USE_L10N = True
-USE_TZ = False   #默认是Ture，时间是utc时间，由于我们要用本地时间，所用手动修改为false！！！！
+USE_TZ = False  # 默认是Ture，时间是utc时间，由于我们要用本地时间，所用手动修改为false！！！！
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
