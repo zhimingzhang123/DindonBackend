@@ -13,7 +13,6 @@ class UserType:
 
 # Create your models here.
 class User(AbstractUser):
-
     userPhoneNumber = models.CharField(max_length=11, verbose_name="用户手机号码", unique=True)
 
     userCreateTime = models.DateTimeField(auto_now_add=True, verbose_name="用户创建时间")
