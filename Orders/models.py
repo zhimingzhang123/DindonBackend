@@ -1,6 +1,6 @@
 from django.db import models
 from Dishes.models import Dish
-from Tables.models import DiningTable
+from Tables.models import Table
 from Users.models import User
 
 
@@ -38,7 +38,7 @@ class Order(models.Model):
 
     orderUser = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="订单用户")
 
-    orderTable = models.ForeignKey(DiningTable, on_delete=models.CASCADE, verbose_name="订单餐桌")
+    orderTable = models.ForeignKey(Table, on_delete=models.CASCADE, verbose_name="订单餐桌")
 
     orderTime = models.DateTimeField(verbose_name="下单时间", auto_now_add=True)
 
