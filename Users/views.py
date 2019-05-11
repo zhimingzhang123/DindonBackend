@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 
-from Users.models import VerifyCode
-from Users.serializers import VerifyCodeSerializer
+from Users.models import VerifyCode, User
+from Users.serializers import VerifyCodeSerializer, UserRegisterSerializer
 from Utils.tools import generate_code
 
 
@@ -37,4 +37,29 @@ class VerifyCodeAPIView(CreateAPIView):
 
 
 class UserRegisterView(CreateAPIView):
-    pass
+    serializer_class = UserRegisterSerializer
+    queryset = User.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = self.perform_create(serializer)
+
+        # phone_number = serializer.validated_data['phone_number']
+        # password = serializer.validated_data['password']
+        # username = serializer.validated_data['username']
+        #
+        # user = User(phone_number=phone_number, username=username)
+        # user.set_password(password)
+        # user.save()
+        re_dict = serializer.data
+        # payload = jwt_payload_handler(user)
+        # re_dict["token"] = jwt_encode_handler(payload)
+        # re_dict["name"] = user.name if user.name else user.username
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            re_dict,
+            status=status.HTTP_201_CREATED,
+            headers=headers)

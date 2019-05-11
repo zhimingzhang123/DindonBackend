@@ -1,12 +1,9 @@
-from rest_framework import serializers, viewsets
-from rest_framework.serializers import Serializer
+from rest_framework import serializers
 
 from Tables.models import Table, BookTime
 
 
 class BookTimeSerializer(serializers.ModelSerializer):
-    user_info = serializers.Hyperlink
-
     class Meta:
         model = BookTime
         fields = "__all__"
@@ -29,7 +26,7 @@ class TableListSerializer(serializers.ModelSerializer):
         fields = ("table_id", 'table_category', 'table_state', 'book_counts', 'book_times')
 
 
-class BookTableSerializer(Serializer):
+class BookTableSerializer(serializers.Serializer):
     table = serializers.IntegerField(
         required=True,
         help_text="餐桌编号"
@@ -46,7 +43,10 @@ class BookTableSerializer(Serializer):
     )
 
     def validate_table(self, table):
-        if Table.objects.filter(id=table):
+        if Table.objects.filter(table_id=table):
             return table
         else:
             raise serializers.ValidationError("不存在此餐桌")
+
+    # def validate_book_date(self, date):
+    #     if
