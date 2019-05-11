@@ -1,15 +1,18 @@
-from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 
-# Create your views here.
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
+from Tables.filters import TableFilter
 from Tables.models import DiningTable
-from Tables.serializers import TableSerializer
+from Tables.serializers import TableSerializer, TableUpdateSerializer
 
 
-class TableListView(APIView):
-    def get(self, request):
-        tables = DiningTable.objects.all()
-        serializer = TableSerializer(tables, many=True)
-        return Response(serializer.data)
+class TableListView(ListAPIView):
+    queryset = DiningTable.objects.all()
+    serializer_class = TableSerializer
+    filter_class = TableFilter
+    filter_backends = (DjangoFilterBackend,)
+
+
+class TableView(RetrieveUpdateAPIView):
+    queryset = DiningTable.objects.all()
+    serializer_class = TableUpdateSerializer

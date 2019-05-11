@@ -6,7 +6,10 @@
 > pip install djangorestframework  
 pip install django-cors-headers  
 pip install markdown  
-pip install django-filter
+pip install django-filter  
+pip install coreapi  
+pip install djangorestframework_simplejwt
+
 
 ### 需求说明
 
