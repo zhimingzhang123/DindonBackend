@@ -75,8 +75,8 @@ ROOT_URLCONF = 'DinDonBackend.urls'
 # DRF的一些配置
 REST_FRAMEWORK = {
     # 分页器设置
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100,
+    'DEFAULT_PAGINATION_CLASS': 'DinDonBackend.pagination.StandardResultsSetPagination',
+    'PAGE_SIZE': 10,
     # 过滤器设置
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',
                                 #                             'rest_framework.filters.SearchFilter',
@@ -88,6 +88,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+# 手机号正则表达式
+REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 
 TEMPLATES = [
     {

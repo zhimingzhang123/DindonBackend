@@ -14,3 +14,5 @@ class TableUpdateSerializer(serializers.ModelSerializer):
         model = DiningTable
         fields = ('tableId', 'tableState')
 
+    # def create(self, validated_data):
+    #

@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 
 from Tables.filters import TableFilter
 from Tables.models import DiningTable
@@ -13,6 +13,6 @@ class TableListView(ListAPIView):
     filter_backends = (DjangoFilterBackend,)
 
 
-class TableUpdateView(UpdateAPIView):
+class TableView(RetrieveUpdateAPIView):
     queryset = DiningTable.objects.all()
     serializer_class = TableUpdateSerializer

@@ -43,20 +43,14 @@ class DiningTable(models.Model):
                                      default=0
                                      )
 
+    bookUser = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="预定用户")
+
+    bookTime = models.DateTimeField(null=True, blank=True, verbose_name="预定时间")
+
     def __str__(self):
         description = "餐桌编号:{} 餐桌类别:{}".format(self.tableId, TableType.type(self.tableCategory))
         return description
 
     class Meta:
         verbose_name = "餐桌"
-        verbose_name_plural = verbose_name
-
-
-class BookTable(models.Model):
-    table = models.ForeignKey(DiningTable, on_delete=models.CASCADE, verbose_name="餐桌")
-    bookUser = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="预定用户")
-    bookTime = models.DateTimeField()
-
-    class Meta:
-        verbose_name = "预定的餐桌"
         verbose_name_plural = verbose_name
