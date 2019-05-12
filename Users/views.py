@@ -1,8 +1,6 @@
 import random
-from datetime import datetime
 
 from django.db.models import Q
-from django.shortcuts import render
 
 from rest_framework.generics import CreateAPIView
 from rest_framework import status
@@ -29,7 +27,7 @@ class SmsCodeView(CreateAPIView):
         mobile = serializer.validated_data['mobile']
 
         # 生成6位随机验证码
-        code = "%06d" % random.randint(000000, 999999)
+        code = "%04d" % random.randint(0000, 9999)
 
         # TODO 调用第三方发送短信验证码的接口
 
