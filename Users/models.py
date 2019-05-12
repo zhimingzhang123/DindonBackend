@@ -26,17 +26,19 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "用户"
         verbose_name_plural = verbose_name
-# class VerifyCode(models.Model):
-#     """
-#     短信验证码
-#     """
-#     code = models.CharField(max_length=10, verbose_name="验证码")
-#     mobile = models.CharField(max_length=11, verbose_name="电话")
-#     add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
-#
-#     class Meta:
-#         verbose_name = "短信验证码"
-#         verbose_name_plural = verbose_name
-#
-#     def __str__(self):
-#         return self.code
+
+class VerifyCode(models.Model):
+    """
+    短信验证码
+    """
+    code = models.CharField(max_length=10, verbose_name="验证码")
+    mobile = models.CharField(max_length=11, verbose_name="电话")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
+    is_register = models.BooleanField(default=False, null=True, verbose_name='是否为注册验证码')
+
+    class Meta:
+        verbose_name = "短信验证码"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.code
