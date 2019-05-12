@@ -1,7 +1,5 @@
 import random
 
-from django.db.models import Q
-
 from rest_framework.generics import CreateAPIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -55,14 +53,33 @@ class LoginWithSmsCodeView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         phone_number = serializer.validated_data['phone_number']
-        user_query = User.objects.filter(Q(username=phone_number) | Q(phone_number=phone_number))
-        if not user_query.count():
-            user = self.perform_create(serializer)
-        else:
-            user = user_query[0]
+        user = User.objects.filter(phone_number=phone_number).first()
 
         token = TokenObtainPairSerializer().get_token(user)
         data = serializer.data
+        data.update({'username': user.username})
+        data.update({'refresh': str(token)})
+        data.update({'access': str(token.access_token)})
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+
+class UserRegisterView(CreateAPIView):
+    """
+    用户注册
+    """
+    queryset = User.objects.all()
+    serializer_class = UserRegisterSerializer
+
+    def create(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+
+        data = serializer.data
+        token = TokenObtainPairSerializer().get_token(user)
         data.update({'username': user.username})
         data.update({'refresh': str(token)})
         data.update({'access': str(token.access_token)})
@@ -72,11 +89,3 @@ class LoginWithSmsCodeView(CreateAPIView):
 
     def perform_create(self, serializer):
         return serializer.save()
-
-
-class UserRegisterView(CreateAPIView):
-    """
-    用户注册
-    """
-    queryset = User.objects.all()
-    serializer_class = UserRegisterSerializer
