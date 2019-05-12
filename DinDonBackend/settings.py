@@ -89,7 +89,7 @@ REST_FRAMEWORK = {
     )
 }
 # 手机号正则表达式
-REGEX_MOBILE = "1[3|4|5|7|8][0-9]{9}"
+REGEX_PHONE = "1[3|4|5|7|8][0-9]{9}"
 
 TEMPLATES = [
     {
