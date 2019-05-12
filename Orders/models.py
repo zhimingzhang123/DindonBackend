@@ -34,32 +34,45 @@ class OrderStatus:
 
 
 class Order(models.Model):
-    orderId = models.AutoField(primary_key=True, verbose_name="订单编号")
+    order_id = models.AutoField(primary_key=True, verbose_name="订单编号")
 
-    orderUser = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="订单用户")
+    order_user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="订单用户")
 
-    orderTable = models.ForeignKey(Table, on_delete=models.CASCADE, verbose_name="订单餐桌")
+    order_table = models.ForeignKey(Table, on_delete=models.CASCADE, verbose_name="订单餐桌")
 
-    orderTime = models.DateTimeField(verbose_name="下单时间", auto_now_add=True)
+    order_time = models.DateTimeField(verbose_name="下单时间", auto_now_add=True)
 
-    orderPayTime = models.DateTimeField(verbose_name="付款时间")
+    order_pay_time = models.DateTimeField(verbose_name="付款时间", null=True, blank=True)
 
-    orderProcessTime = models.DateTimeField(verbose_name="处理时间")
+    order_process_time = models.DateTimeField(verbose_name="处理时间", null=True, blank=True)
 
-    orderFinishTime = models.DateTimeField(verbose_name="完成时间")
+    order_finish_time = models.DateTimeField(verbose_name="完成时间", null=True, blank=True)
 
-    orderConfirmTime = models.DateTimeField(verbose_name="确认时间")
+    order_confirm_time = models.DateTimeField(verbose_name="确认时间", null=True, blank=True)
 
-    orderPrice = models.FloatField(verbose_name="订单金额")
+    order_price = models.FloatField(verbose_name="订单金额")
 
-    orderScript = models.TextField(verbose_name="订单留言", null=True)
+    order_script = models.TextField(verbose_name="订单留言", null=True)
 
-    orderStatus = models.IntegerField(verbose_name="订单状态", choices=OrderStatus.OrderStatusChoices)
+    order_status = models.IntegerField(verbose_name="订单状态", choices=OrderStatus.OrderStatusChoices)
 
-    orderDishes = models.ManyToManyField(Dish, verbose_name="订单菜品", through="OrderDish")
+    order_dishes = models.ManyToManyField(Dish, verbose_name="订单菜品", through="OrderDish")
+
+    PAY_CHOICES = (
+        (0, "支付宝"),
+        (1, '微信支付')
+    )
+
+    pay_method = models.IntegerField(choices=PAY_CHOICES, verbose_name="支付方式")
+
+    table_ware_num = models.IntegerField(verbose_name="餐具份数")
+
+    check_info = models.TextField(null=True, blank=True, verbose_name="发票信息")
+
+    trade_info = models.TextField(null=True, blank=True, verbose_name='交易信息')
 
     def __str__(self):
-        description = "订单编号:{}\n".format(self.orderId)
+        description = "订单编号:{}\n".format(self.order_id)
         return description
 
     class Meta:
@@ -72,4 +85,4 @@ class OrderDish(models.Model):
 
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name="菜品")
 
-    dishNum = models.IntegerField(verbose_name="下单数量")
+    dish_num = models.IntegerField(verbose_name="点餐数量")
