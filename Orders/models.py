@@ -54,7 +54,9 @@ class Order(models.Model):
 
     order_script = models.TextField(verbose_name="订单留言", null=True)
 
-    order_status = models.IntegerField(verbose_name="订单状态", choices=OrderStatus.OrderStatusChoices)
+    order_status = models.IntegerField(verbose_name="订单状态",
+                                       choices=OrderStatus.OrderStatusChoices,
+                                       default=OrderStatus.Ordered)
 
     order_dishes = models.ManyToManyField(Dish, verbose_name="订单菜品", through="OrderDish")
 
@@ -72,7 +74,7 @@ class Order(models.Model):
     trade_info = models.TextField(null=True, blank=True, verbose_name='交易信息')
 
     def __str__(self):
-        description = "订单编号:{}\n".format(self.order_id)
+        description = "编号:{}".format(self.order_id)
         return description
 
     class Meta:
@@ -86,3 +88,10 @@ class OrderDish(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name="菜品")
 
     dish_num = models.IntegerField(verbose_name="点餐数量")
+
+    def __str__(self):
+        return "订单-{},菜品-{}{}份".format(self.order, self.dish, self.dish_num)
+
+    class Meta:
+        verbose_name = "订单菜品"
+        verbose_name_plural = verbose_name

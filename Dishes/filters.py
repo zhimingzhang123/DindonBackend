@@ -5,9 +5,9 @@ from Dishes.models import Dish
 
 
 class DishFilter(FilterSet):
-    dishPriceMin = django_filters.NumberFilter(field_name='dishPrice', lookup_expr='gte',)
-    dishPriceMax = django_filters.NumberFilter(field_name='dishPrice', lookup_expr='lte')
+    dish_price_min = django_filters.NumberFilter(field_name='dish_price', lookup_expr='gte',)
+    dish_price_max = django_filters.NumberFilter(field_name='dish_price', lookup_expr='lte')
 
     class Meta:
         model = Dish
-        fields = ['dishId', 'dishName', 'dishPriceMin', 'dishPriceMax', 'dishType', 'dishPrice']
+        fields = ['dish_id', 'dish_name', 'dish_price_min', 'dish_price_max', 'dish_type', 'dish_price']

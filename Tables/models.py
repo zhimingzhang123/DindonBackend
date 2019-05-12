@@ -43,7 +43,7 @@ class Table(models.Model):
                                       )
 
     def __str__(self):
-        description = "餐桌编号:{} 餐桌类别:{}".format(self.table_id, TableType.type(self.table_category))
+        description = "餐桌{}{}".format(self.table_id, TableType.type(self.table_category))
         return description
 
     class Meta:

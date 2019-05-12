@@ -14,7 +14,7 @@ class DishListView(ListAPIView):
     serializer_class = DishSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter,)
     filter_class = DishFilter
-    search_fields = ('dishName', 'dishType', 'dishDescription')
+    search_fields = ('dish_name', 'dish_type', 'dish_description')
     ordering_fields = "__all__"
 
 
@@ -22,8 +22,8 @@ class DishTypeView(APIView):
 
     def get(self, requset):
         dishes = Dish.objects.all()
-        typeList = set()
+        type_list = set()
         for dish in dishes:
-            if dish.dishType:
-                typeList.add(dish.dishType)
-        return Response(typeList)
+            if dish.dish_type:
+                type_list.add(dish.dish_type)
+        return Response(type_list)

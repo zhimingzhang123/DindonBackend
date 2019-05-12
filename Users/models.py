@@ -34,14 +34,14 @@ class User(AbstractUser):
     """
     用户类
     """
-    phone_number = models.CharField(max_length=11, verbose_name="用户手机号码", unique=True)
+    phone_number = models.CharField(max_length=11, verbose_name="用户手机号码", unique=True, null=True)
 
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="用户创建时间")
 
     user_type = models.IntegerField(default=UserType.Customer, choices=UserType.UserTypeChoices, verbose_name="用户类型")
 
     def __str__(self):
-        description = "用户: {}".format(self.username)
+        description = "{}".format(self.username)
         return description
 
     class Meta:

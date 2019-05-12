@@ -7,10 +7,10 @@ class DishSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dish
         # fields = '__all__'
-        exclude = ('dishAddTime',)
+        exclude = ('dish_add_time',)
 
 
 class DishTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dish
-        fields = ("dishType",)
+        fields = ("dish_type",)
