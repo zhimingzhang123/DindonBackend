@@ -32,7 +32,7 @@ SECRET_KEY = 'etg2)8%62c1bz555@71%x$r6@_l^5i0dg+qhe1^aia#k6gg)4x'
 DEBUG = True
 
 # 域名访问权限
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", ]
 
 AUTH_USER_MODEL = 'Users.User'
 
@@ -75,12 +75,12 @@ ROOT_URLCONF = 'DinDonBackend.urls'
 # DRF的一些配置
 REST_FRAMEWORK = {
     # 分页器设置
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100,
+    'DEFAULT_PAGINATION_CLASS': 'DinDonBackend.pagination.StandardResultsSetPagination',
+    'PAGE_SIZE': 10,
     # 过滤器设置
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',
-                                'rest_framework.filters.SearchFilter',
-                                'rest_framework.filters.OrderingFilter'
+                                #                             'rest_framework.filters.SearchFilter',
+                                #                             'rest_framework.filters.OrderingFilter'
                                 ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
@@ -88,6 +88,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+# 手机号正则表达式
+REGEX_PHONE = "1[3|4|5|7|8][0-9]{9}"
 
 TEMPLATES = [
     {
@@ -189,9 +191,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'all_static')
 # 跨域请求配置
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = (
-    '*'
-)
+# CORS_ORIGIN_WHITELIST = [
+#     "http://127.0.0.1:9000",
+# ]
 CORS_ALLOW_METHODS = (
     'DELETE',
     'GET',

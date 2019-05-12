@@ -1,8 +1,6 @@
 import random
-from datetime import datetime
 
 from django.db.models import Q
-from django.shortcuts import render
 
 from rest_framework.generics import CreateAPIView
 from rest_framework import status
@@ -26,19 +24,20 @@ class SmsCodeView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        mobile = serializer.validated_data['mobile']
+        phone_number = serializer.validated_data['phone_number']
 
         # 生成6位随机验证码
-        code = "%06d" % random.randint(000000, 999999)
-
+        code = "%06d" % random.randint(0000, 9999)
+        # 调试使用
+        code = "123456"
         # TODO 调用第三方发送短信验证码的接口
 
         try:
-            VerifyCode.objects.create(mobile=mobile,
+            VerifyCode.objects.create(phone_number=phone_number,
                                       code=code,
                                       is_register=is_register
                                       )
-            return Response({"status": "发送成功"}, status=status.HTTP_200_OK)
+            return Response({"status": "发送成功"}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"status": "发送失败"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -55,8 +54,8 @@ class LoginWithSmsCodeView(CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.mobile = serializer.validated_data['userPhoneNumber']
-        user_query = User.objects.filter(Q(username=self.mobile) | Q(userPhoneNumber=self.mobile))
+        phone_number = serializer.validated_data['phone_number']
+        user_query = User.objects.filter(Q(username=phone_number) | Q(phone_number=phone_number))
         if not user_query.count():
             user = self.perform_create(serializer)
         else:
@@ -69,10 +68,10 @@ class LoginWithSmsCodeView(CreateAPIView):
         data.update({'access': str(token.access_token)})
 
         headers = self.get_success_headers(serializer.data)
-        return Response(data, status=status.HTTP_200_OK, headers=headers)
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        return serializer.save(username=self.mobile)
+        return serializer.save()
 
 
 class UserRegisterView(CreateAPIView):

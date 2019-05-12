@@ -1,35 +1,48 @@
 import re
 from datetime import datetime, timedelta
+
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework import exceptions
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from DinDonBackend.settings import REGEX_PHONE
 from Users.models import User, VerifyCode
 
 
 class SmsCodeSerializer(serializers.Serializer):
-    mobile = serializers.CharField(max_length=11, min_length=11, required=True)
+    phone_number = serializers.CharField(
+        required=True,
+        min_length=11,
+        max_length=11,
+        help_text="用户手机号码",
+        error_messages={
+            'required': "必须填写手机号",
+            'min_length': "手机号格式错误",
+            'max_length': "手机号格式错误",
+            'blank': "手机号不能为空"
+        }
+    )
     is_register = serializers.BooleanField()
 
     def validate(self, attrs):
-        mobile = attrs['mobile']
+        phone_number = attrs['phone_number']
         is_register = attrs['is_register']
 
         # 验证手机号是否合法
-        REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
-        if not re.match(REGEX_MOBILE, mobile):
-            raise serializers.ValidationError('无效的手机号')
+        if not re.match(REGEX_PHONE, phone_number):
+            raise serializers.ValidationError("手机号格式错误")
 
         if is_register:
             # 判断手机号是否已经注册过
-            if User.objects.filter(userPhoneNumber=mobile).count():
+            if User.objects.filter(phone_number=phone_number).count():
                 raise serializers.ValidationError('该手机号已经被注册')
 
         # 设置60秒内不能重复发送验证码
         one_minute_ago = datetime.now() - timedelta(minutes=1)
-        query = VerifyCode.objects.filter(mobile=mobile, add_time__gt=one_minute_ago, is_register=is_register).order_by('-add_time')
+        query = VerifyCode.objects.filter(phone_number=phone_number, add_time__gt=one_minute_ago,
+                                          is_register=is_register).order_by('-add_time')
         if query.count():
             raise serializers.ValidationError('两次发送短信时间间隔小于60秒')
 
@@ -38,34 +51,37 @@ class SmsCodeSerializer(serializers.Serializer):
 
 class LoginWithSmsCodeSerializer(serializers.ModelSerializer):
     code = serializers.CharField(required=True, max_length=6, min_length=6, write_only=True)
-    userPhoneNumber = serializers.CharField(max_length=11, min_length=11, write_only=True)
+    phone_number = serializers.CharField(max_length=11, min_length=11, write_only=True)
 
     def validate(self, attrs):
         super().validate(attrs)
 
-        mobile = attrs['userPhoneNumber']
+        phone_number = attrs['phone_number']
         code = attrs.pop('code')
         # 验证码5分钟内有效
         five_minutes_ago = datetime.now() - timedelta(minutes=500)
-        query = VerifyCode.objects.filter(add_time__gt=five_minutes_ago, mobile=mobile, is_register=False).order_by('-add_time')
+        query = VerifyCode.objects.filter(add_time__gt=five_minutes_ago, phone_number=phone_number,
+                                          is_register=False).order_by(
+            '-add_time')
         if query:
             if query.first().code != code:
                 raise serializers.ValidationError('验证码错误')
 
+        attrs['username'] = phone_number
         del code
         return attrs
 
     class Meta:
         model = User
-        fields = ('userPhoneNumber', 'code')
+        fields = ('phone_number', 'code')
 
 
 class LoginWithPhonePasswordSerializer(TokenObtainPairSerializer):
-    username_field = 'userPhoneNumber'
+    username_field = 'phone_number'
 
     def validate(self, attrs):
-        userPhoneNumber = attrs['userPhoneNumber']
-        user_obj = User.objects.filter(userPhoneNumber=userPhoneNumber).first()
+        phone_number = attrs['phone_number']
+        user_obj = User.objects.filter(phone_number=phone_number).first()
         if user_obj:
             authenticate_kwargs = {
                 'username': user_obj.username,
@@ -79,13 +95,12 @@ class LoginWithPhonePasswordSerializer(TokenObtainPairSerializer):
             self.user = authenticate(**authenticate_kwargs)
 
             if self.user is None or not self.user.is_active:
-                raise exceptions.AuthenticationFailed(
+                raise AuthenticationFailed(
                     self.error_messages['no_active_account'],
                     'no_active_account',
                 )
             data = {}
             refresh = self.get_token(self.user)
-
 
             data['username'] = user_obj.username
             data['refresh'] = str(refresh)
@@ -100,18 +115,19 @@ class LoginWithPhonePasswordSerializer(TokenObtainPairSerializer):
 class UserRegisterSerializer(serializers.ModelSerializer):
     code = serializers.CharField(required=True, max_length=6, min_length=6, write_only=True)
 
-    username = serializers.CharField(required=True, allow_blank=False,
-                                     validators=[UniqueValidator(queryset=User.objects.all(), message="用户已经存在")])
+    phone_number = serializers.CharField(required=True, allow_blank=False,
+                                         validators=[UniqueValidator(queryset=User.objects.all(), message="手机号已经存在")])
 
     def validate(self, attrs):
         super().validate(attrs)
 
-        mobile = attrs['userPhoneNumber']
+        phone_number = attrs['phone_number']
+        attrs['username'] = phone_number
         code = attrs.pop('code')
 
         # 验证码5分钟内有效
-        five_minutes_ago = datetime.now() - timedelta(minutes=500)
-        query = VerifyCode.objects.filter(add_time__gt=five_minutes_ago, mobile=mobile, is_register=True)
+        five_minutes_ago = datetime.now() - timedelta(minutes=5)
+        query = VerifyCode.objects.filter(add_time__gt=five_minutes_ago, phone_number=phone_number, is_register=True)
         if query:
             if query.first().code != code:
                 raise serializers.ValidationError('验证码错误')
@@ -121,8 +137,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'userPhoneNumber', 'code',)
+        fields = ('password', 'phone_number', 'code',)
         extra_kwargs = {
             'password': {'write_only': True},
-            'userPhoneNumber': {'write_only': True},
+            'phone_number': {'write_only': True},
         }
