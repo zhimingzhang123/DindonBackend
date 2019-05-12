@@ -13,7 +13,7 @@ class VerifyCodeAPIView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        phone_num = serializer.validated_data["phone_num"]
+        phone_number = serializer.validated_data["phone_number"]
         # code = generate_code()
         code = "1234"
         # TODO:发送短信的逻辑 可能要异步处理
@@ -21,17 +21,17 @@ class VerifyCodeAPIView(CreateAPIView):
         successfully_send = True
         headers = self.get_success_headers(serializer.data)
         if successfully_send:
-            code = VerifyCode(phone_num=phone_num, code=code)
+            code = VerifyCode(phone_num=phone_number, code=code)
             code.save()
             return Response(
                 {
-                    "phone_num": phone_num
+                    "phone_number": phone_number
                 },
                 status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(
                 {
-                    "phone_num": err_msg
+                    "phone_number": err_msg
                 },
                 status=status.HTTP_400_BAD_REQUEST)
 

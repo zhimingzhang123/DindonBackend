@@ -9,7 +9,7 @@ from Users.models import User, VerifyCode
 
 
 class VerifyCodeSerializer(Serializer):
-    phone_num = serializers.CharField(
+    phone_number = serializers.CharField(
         required=True,
         min_length=11,
         max_length=11,
@@ -21,23 +21,23 @@ class VerifyCodeSerializer(Serializer):
         }
     )
 
-    def validate_phone_num(self, phone_num):
+    def validate_phone_num(self, phone_number):
         """
         验证手机号
         :param phone_num:
         :return phone_num:
         """
-        if User.objects.filter(phone_number=phone_num):
+        if User.objects.filter(phone_number=phone_number):
             raise serializers.ValidationError("该手机号已注册")
 
-        if not re.match(REGEX_MOBILE, phone_num):
+        if not re.match(REGEX_MOBILE, phone_number):
             raise serializers.ValidationError("手机号格式错误")
 
         one_minutes_ago = datetime.now() - timedelta(hours=0, minutes=1, seconds=0)
-        if VerifyCode.objects.filter(add_time__gt=one_minutes_ago, phone_num=phone_num).count():
+        if VerifyCode.objects.filter(add_time__gt=one_minutes_ago, phone_num=phone_number).count():
             raise serializers.ValidationError("距离上一次发送未超过60s")
 
-        return phone_num
+        return phone_number
 
 
 class UserRegisterSerializer(ModelSerializer):
