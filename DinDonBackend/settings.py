@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'Tables.apps.TablesConfig',
     'Users.apps.UsersConfig',
     'Announcements.apps.AnnouncementsConfig',
-    'django_filters'
+    'django_filters',
+    # 'drf_writable_nested',
 ]
 
 MIDDLEWARE = [

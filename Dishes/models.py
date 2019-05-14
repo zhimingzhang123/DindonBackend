@@ -3,9 +3,9 @@ from django.db import models
 
 # Create your models here.
 class Dish(models.Model):
-    dish_id = models.AutoField(primary_key=True, verbose_name="菜品编号")
+    dish_id = models.IntegerField(verbose_name="菜品编号", primary_key=True)
 
-    dish_name = models.CharField(max_length=50, verbose_name="菜品名称")
+    dish_name = models.CharField(max_length=128, verbose_name="菜品名称")
 
     dish_price = models.FloatField(verbose_name="菜品价格")
 

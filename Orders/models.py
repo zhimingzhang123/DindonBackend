@@ -34,7 +34,7 @@ class OrderStatus:
 
 
 class Order(models.Model):
-    order_id = models.AutoField(primary_key=True, verbose_name="订单编号")
+    order_id = models.IntegerField(verbose_name="订单编号", primary_key=True)
 
     order_user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="订单用户")
 
@@ -57,9 +57,6 @@ class Order(models.Model):
     order_status = models.IntegerField(verbose_name="订单状态",
                                        choices=OrderStatus.OrderStatusChoices,
                                        default=OrderStatus.Ordered)
-
-    order_dishes = models.ManyToManyField(Dish, verbose_name="订单菜品", through="OrderDish")
-
     PAY_CHOICES = (
         (0, "支付宝"),
         (1, '微信支付')
@@ -82,16 +79,20 @@ class Order(models.Model):
         verbose_name_plural = verbose_name
 
 
-class OrderDish(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="订单编号")
-
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name="菜品")
-
-    dish_num = models.IntegerField(verbose_name="点餐数量")
+class OrderDetail(models.Model):
+    order_id = models.ForeignKey(Order, verbose_name="订单编号",on_delete=models.CASCADEzh)
+    dish_id = models.IntegerField(verbose_name="菜品编号")
+    dish_name = models.CharField(verbose_name="菜品名称", max_length=128)
+    dish_price = models.FloatField(verbose_name="菜品价格")
+    dish_picture = models.TextField(verbose_name="菜品图片", null=True, blank=True)
+    dish_description = models.TextField(verbose_name="菜品描述", null=True, blank=True)
+    dish_num = models.IntegerField(verbose_name="菜品数量")
+    created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+    update_at = models.DateTimeField(verbose_name="更新时间", auto_now=True)
 
     def __str__(self):
-        return "订单-{},菜品-{}{}份".format(self.order, self.dish, self.dish_num)
+        return "订单{}详情".format(self.order_id)
 
     class Meta:
-        verbose_name = "订单菜品"
+        verbose_name = "订单详情"
         verbose_name_plural = verbose_name

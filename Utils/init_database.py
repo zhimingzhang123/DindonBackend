@@ -5,11 +5,12 @@ from Dishes.models import Dish
 from Tables.models import Table
 from Users.models import User
 
-# user = User()
-# user.username = 'admin'
-# user.is_superuser = True
-# user.set_password("123456")
-# user.save()
+user = User()
+user.username = 'admin'
+user.is_superuser = True
+user.is_staff = True
+user.set_password("123456")
+user.save()
 
 for i in range(10):
     table = Table(
@@ -293,13 +294,13 @@ dishes = ['蒸羊羔',
           '氽毛豆',
           '炒豇豆'
           '腌苤蓝丝儿']
-# for i in range(273):
-#     dish = Dish(
-#         dish_name=dishes[i],
-#         dish_description="好吃又美味",
-#         dish_picture="404 NOT Found",
-#         dish_type=["限量供应", '口碑推荐', '特色菜', '进店必点'][random.randint(0, 3)],
-#         dish_stock=999,
-#         dish_price=random.randint(0, 100)
-#     )
-#     dish.save()
+for i in range(273):
+    dish = Dish(
+        dish_name=dishes[i],
+        dish_description="好吃又美味",
+        dish_picture="404 NOT Found",
+        dish_type=["限量供应", '口碑推荐', '特色菜', '进店必点'][random.randint(0, 3)],
+        dish_stock=999,
+        dish_price=random.randint(0, 100)
+    )
+    dish.save()
