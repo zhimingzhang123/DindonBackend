@@ -1,4 +1,5 @@
 import random
+from django.contrib.auth.hashers import make_password
 
 from rest_framework.generics import CreateAPIView
 from rest_framework import status
@@ -88,4 +89,4 @@ class UserRegisterView(CreateAPIView):
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        return serializer.save()
+        return serializer.save(password=make_password(serializer.validated_data['password']))
