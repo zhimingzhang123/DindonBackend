@@ -4,7 +4,6 @@ from Tables.models import Table, BookTime
 
 
 class BookTimeSerializer(serializers.ModelSerializer):
-    table = serializers.StringRelatedField()
     book_user = serializers.StringRelatedField()
 
     class Meta:

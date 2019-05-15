@@ -5,6 +5,7 @@ from rest_framework import serializers
 from Dishes.models import Dish
 from Orders.models import Order, OrderDetail, Transaction, OrderStatus
 from Tables.models import Table
+from Users.models import UserType
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
@@ -51,6 +52,17 @@ class TransactionUpdateSerializer(serializers.ModelSerializer):
             'order',
             'order_status'
         )
+
+    def validate_order_status(self, data):
+        if self.context['request'].user.user_type == UserType.Waiter:
+            raise serializers.ValidationError("无此权限")
+        if self.context['request'].user.user_type == UserType.Customer:
+            if not (data == OrderStatus.Payed or data == OrderStatus.Confirmed):
+                raise serializers.ValidationError("无此权限")
+        if self.context['request'].user.user_type == UserType.Chef:
+            if not (data == OrderStatus.Processing or data == OrderStatus.Finished):
+                raise serializers.ValidationError("无此权限")
+        return data
 
     def update(self, instance, validated_data):
         if instance:

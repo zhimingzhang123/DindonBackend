@@ -1,8 +1,9 @@
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, UpdateAPIView
 
 from Orders.models import Order, Transaction
-from Orders.permissions import OrderBasePermission, OrderCreatePermission
+from Orders.permissions import OrderBasePermission, CustomerPermission, SuperPermission
 from Orders.serializers import OrderSerializer, TransactionSerializer, TransactionUpdateSerializer
+from Users.models import UserType
 
 
 class OrderListView(ListAPIView):
@@ -15,15 +16,26 @@ class OrderListView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
+        if user.is_superuser or user.user_type == UserType.Manager:
             return Order.objects.all()
         else:
             return Order.objects.filter(order_user=user)
 
 
 class OrderRetrieveAPIView(RetrieveAPIView):
+    """
+    取回订单
+    """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = (SuperPermission | CustomerPermission,)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser or user.user_type == UserType.Manager:
+            return Order.objects.all()
+        else:
+            return Order.objects.filter(order_user=user)
 
 
 class OrderCreateView(CreateAPIView):
@@ -32,7 +44,7 @@ class OrderCreateView(CreateAPIView):
     """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = (OrderBasePermission, OrderCreatePermission)
+    permission_classes = (OrderBasePermission, CustomerPermission)
 
 
 # TODO:支付API
@@ -45,6 +57,7 @@ class OrderProcessView(UpdateAPIView):
     """
     订单处理
     """
+    permission_classes = (OrderBasePermission,)
     lookup_field = 'order'
     queryset = Transaction.objects.all()
     serializer_class = TransactionUpdateSerializer
