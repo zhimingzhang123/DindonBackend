@@ -1,9 +1,10 @@
+from datetime import datetime
+
 from rest_framework import serializers
 
 from Dishes.models import Dish
-from Orders.models import Order, OrderDetail, Transaction
+from Orders.models import Order, OrderDetail, Transaction, OrderStatus
 from Tables.models import Table
-from Users.models import User
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
@@ -36,6 +37,40 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         exclude = ('id', 'order')
+
+
+# TODO:支付API的内容
+class TransactionPurChaseSerializer(serializers.ModelSerializer):
+    pass
+
+
+class TransactionUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = (
+            'order',
+            'order_status'
+        )
+
+    def update(self, instance, validated_data):
+        if instance:
+            order_status = validated_data['order_status']
+            # 下单->取消
+            if instance.order_status == OrderStatus.Ordered and order_status == OrderStatus.Canceled:
+                instance.order_status = order_status
+            # 支付->处理
+            if instance.order_status == OrderStatus.Payed and order_status == OrderStatus.Processing:
+                instance.order_status = order_status
+                instance.order_process_time = datetime.now()
+            # 处理->完成
+            if instance.order_status == OrderStatus.Processing and order_status == OrderStatus.Finished:
+                instance.order_status = order_status
+                instance.order_finish_time = datetime.now()
+            # 完成->确认
+            if instance.order_status == OrderStatus.Finished and order_status == OrderStatus.Confirmed:
+                instance.order_status = order_status
+                instance.order_confirm_time = datetime.now()
+            instance.save()
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -99,7 +134,7 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(
             **validated_data
         )
-        validated_data['order_user'] = User.objects.get(username="admin")
+        # validated_data['order_user'] = User.objects.get(username="admin")
         for detail in order_details:
             dish = Dish.objects.get(dish_id=detail['dish_id'])
             OrderDetail.objects.create(

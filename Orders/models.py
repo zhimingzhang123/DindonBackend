@@ -55,13 +55,21 @@ class Order(models.Model):
 
 class OrderDetail(models.Model):
     order = models.ForeignKey(Order, verbose_name="订单编号", on_delete=models.CASCADE, related_name='order_detail')
+
     dish_id = models.IntegerField(verbose_name="菜品编号")
+
     dish_name = models.CharField(verbose_name="菜品名称", max_length=128)
+
     dish_price = models.FloatField(verbose_name="菜品价格")
+
     dish_picture = models.TextField(verbose_name="菜品图片", null=True, blank=True)
+
     dish_description = models.TextField(verbose_name="菜品描述", null=True, blank=True)
+
     dish_num = models.IntegerField(verbose_name="菜品数量")
+
     created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+
     update_at = models.DateTimeField(verbose_name="更新时间", auto_now=True)
 
     def __str__(self):
