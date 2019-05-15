@@ -26,10 +26,11 @@ class TableListSerializer(serializers.ModelSerializer):
         fields = ("table_id", 'table_category', 'table_state', 'book_counts', 'book_times')
 
 
-class BookTableSerializer(serializers.Serializer):
-    table = serializers.IntegerField(
+class BookTableSerializer(serializers.ModelSerializer):
+    table = serializers.PrimaryKeyRelatedField(
         required=True,
-        help_text="餐桌编号"
+        help_text="餐桌编号",
+        queryset=Table.objects.all()
     )
 
     book_date = serializers.DateField(
@@ -42,11 +43,17 @@ class BookTableSerializer(serializers.Serializer):
         help_text="预定时间段"
     )
 
-    def validate_table(self, table):
-        if Table.objects.filter(table_id=table):
-            return table
-        else:
-            raise serializers.ValidationError("不存在此餐桌")
+    def validate(self, attrs):
+        table_id = attrs['table']
+        book_date = attrs['book_date']
+        book_time = attrs['book_time']
 
-    # def validate_book_date(self, date):
-    #     if
+        if BookTime.objects.filter(table_id=table_id, book_date=book_date, book_time=book_time):
+            raise serializers.ValidationError('该餐桌此时间段已被预定')
+
+        attrs['book_user'] = self.context['request'].user
+        return attrs
+
+    class Meta:
+        model = BookTime
+        fields = ('table', 'book_time', 'book_date')
