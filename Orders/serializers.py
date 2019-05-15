@@ -1,98 +1,119 @@
 from rest_framework import serializers
 
 from Dishes.models import Dish
-from Orders.models import Order, OrderDetail
+from Orders.models import Order, OrderDetail, Transaction
 from Tables.models import Table
 from Users.models import User
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
+    """
+    订单详情的序列化，从前端获得的只有dish_id 和 dish_num
+    """
+
+    def validate_dish_id(self, data):
+        if Dish.objects.filter(dish_id=data):
+            return data
+        else:
+            raise serializers.ValidationError("菜品不存在")
+
     class Meta:
         model = OrderDetail
-        fields = "__all__"
-        # extra_kwargs = {
-        #     ""
-        # }
+        exclude = ('id', 'order', 'created_at', 'update_at')
+        extra_kwargs = {
+            "dish_name": {"read_only": True},
+            "dish_price": {"read_only": True},
+            "dish_picture": {"read_only": True},
+            "dish_description": {"read_only": True},
+        }
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    """
+    交易信息的序列化
+    """
+
+    class Meta:
+        model = Transaction
+        exclude = ('id', 'order')
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    OrderDetail = OrderDetailSerializer()
+    """
+    订单的序列化
+    """
+    order_user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    order_table = serializers.PrimaryKeyRelatedField(queryset=Table.objects.all())
+    order_detail = OrderDetailSerializer(many=True)
+    order_price = serializers.FloatField(required=True, write_only=True)
+    pay_method = serializers.IntegerField(write_only=True)
+    order_status = serializers.IntegerField(required=True, write_only=True)
+    # 交易信息时自动创建的，故只能读取
+    transaction = TransactionSerializer(many=True, read_only=True)
+
     class Meta:
         model = Order
-        fields = "__all__"
+        fields = (
+            'order_id',
+            'order_user',
+            'order_table',
+            'order_price',
+            'order_script',
+            'order_status',
+            'order_detail',
+            'table_ware_num',
+            'pay_method',
+            'transaction'
+        )
+        extra_kwargs = {
+            "order_script": {"write_only": True}
+        }
 
-# class OrderDishSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = OrderDish
-#         fields = ("dish", "dish_num")
-#
-#
-# class OrderListSerializer(serializers.ModelSerializer):
-#     order_dish_num = serializers.SerializerMethodField()
-#     order_dishes = serializers.SerializerMethodField()
-#
-#     def get_order_dishes(self, obj):
-#         dishes = OrderDish.objects.filter(order=obj.order_id)
-#         return OrderDishSerializer(dishes, many=True).data
-#
-#     def get_order_dish_num(self, obj):
-#         dishes = OrderDish.objects.filter(order=obj.order_id)
-#         cnt = 0
-#         for dish in dishes:
-#             cnt += dish.dish_num
-#         return cnt
-#
-#     class Meta:
-#         model = Order
-#         fields = "__all__"
-#
-#
-# class OrderDishSerializer(serializers.ModelSerializer):
-#     dish_num = serializers.IntegerField(write_only=True, required=True)
-#
-#     class Meta:
-#         model = Dish
-#         fields = (
-#             'dish_id',
-#             'dish_num',
-#         )
-#
-#
-# class OrderCreateSerializer(serializers.ModelSerializer):
-#     order_dishes = OrderDishSerializer(many=True)
-#
-#     order_user = serializers.HiddenField(
-#         default=serializers.CurrentUserDefault())
-#
-#     class Meta:
-#         model = Order
-#         fields = (
-#             'order_table',
-#             'pay_method',
-#             'order_script',
-#             'order_dishes',
-#             'order_price',
-#             'table_ware_num',
-#             'order_user'
-#         )
-#
-#     # order_table = serializers.IntegerField(required=True)
-#     # pay_method = serializers.IntegerField(required=True)
-#     # order_script = serializers.CharField(required=True)
-#     # order_dishes = OrderDishSerializer(many=True)
-#     # order_price = serializers.FloatField(required=True)
-#     # table_ware_num = serializers.IntegerField(required=True)
-#     #
-#
-#     def create(self, validated_data):
-#         order_dishes = validated_data.pop('order_dishes')
-#
-#         # table = validated_data.pop('order_table')
-#         # 调试用
-#         user = User.objects.get(username="zwlin")
-#
-#         # table = Table.objects.get(table_id=table)
-#         order = Order.objects.create(**validated_data, order_user=user)
-#         for dish in order_dishes:
-#             OrderDish.objects.create(order=order, **dish)
-#         return order
+    def validate_pay_method(self, data):
+        if data == 0 or data == 1:
+            return data
+        else:
+            raise serializers.ValidationError("支付方式异常")
+
+    def validate(self, attrs):
+        order_details = attrs["order_detail"]
+        price = 0
+        # 验证价格计算正确
+        for detail in order_details:
+            dish = Dish.objects.filter(dish_id=detail['dish_id'])
+            if not dish:
+                raise serializers.ValidationError("菜品信息错误")
+            else:
+                price += dish[0].dish_price * int(detail['dish_num'])
+        if price != attrs['order_price']:
+            raise serializers.ValidationError("价格异常")
+        return attrs
+
+    def create(self, validated_data):
+        order_details = validated_data.pop("order_detail")
+        order_price = validated_data.pop('order_price')
+        order_status = validated_data.pop('order_status')
+        pay_method = validated_data.pop('pay_method')
+        order = Order.objects.create(
+            **validated_data
+        )
+        validated_data['order_user'] = User.objects.get(username="admin")
+        for detail in order_details:
+            dish = Dish.objects.get(dish_id=detail['dish_id'])
+            OrderDetail.objects.create(
+                **detail,
+                order=order,
+                dish_name=dish.dish_name,
+                dish_price=dish.dish_price,
+                dish_picture=dish.dish_picture,
+                dish_description=dish.dish_description,
+            )
+        Transaction.objects.create(
+            order=order,
+            order_price=order_price,
+            order_status=order_status,
+            pay_method=pay_method,
+        )
+        return order

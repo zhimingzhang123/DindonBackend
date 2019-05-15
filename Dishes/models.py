@@ -3,7 +3,7 @@ from django.db import models
 
 # Create your models here.
 class Dish(models.Model):
-    dish_id = models.IntegerField(verbose_name="菜品编号", primary_key=True)
+    dish_id = models.AutoField(verbose_name="菜品编号", primary_key=True)
 
     dish_name = models.CharField(max_length=128, verbose_name="菜品名称")
 
