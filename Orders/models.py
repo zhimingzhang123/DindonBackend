@@ -81,7 +81,7 @@ class OrderDetail(models.Model):
 
 
 class Transaction(models.Model):
-    order = models.ForeignKey(Order, related_name="transaction", verbose_name="订单编号", on_delete=models.CASCADE)
+    order = models.OneToOneField(Order, related_name="transaction", verbose_name="订单编号", on_delete=models.CASCADE)
     order_time = models.DateTimeField(verbose_name="下单时间", auto_now_add=True)
     order_price = models.FloatField(verbose_name="订单金额")
     PAY_CHOICES = (
@@ -98,3 +98,10 @@ class Transaction(models.Model):
                                        default=OrderStatus.Ordered)
     check_info = models.TextField(null=True, blank=True, verbose_name="发票信息")
     trade_info = models.TextField(null=True, blank=True, verbose_name='交易信息')
+
+    def __str__(self):
+        return "订单{}交易信息".format(self.order)
+
+    class Meta:
+        verbose_name = '交易信息'
+        verbose_name_plural = verbose_name

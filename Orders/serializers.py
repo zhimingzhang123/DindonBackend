@@ -58,6 +58,10 @@ class TransactionUpdateSerializer(serializers.ModelSerializer):
             # 下单->取消
             if instance.order_status == OrderStatus.Ordered and order_status == OrderStatus.Canceled:
                 instance.order_status = order_status
+            # 下单->支付
+            if instance.order_status == OrderStatus.Ordered and order_status == OrderStatus.Payed:
+                instance.order_status = order_status
+                instance.order_pay_time = datetime.now()
             # 支付->处理
             if instance.order_status == OrderStatus.Payed and order_status == OrderStatus.Processing:
                 instance.order_status = order_status
@@ -71,6 +75,7 @@ class TransactionUpdateSerializer(serializers.ModelSerializer):
                 instance.order_status = order_status
                 instance.order_confirm_time = datetime.now()
             instance.save()
+        return instance
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -86,7 +91,7 @@ class OrderSerializer(serializers.ModelSerializer):
     pay_method = serializers.IntegerField(write_only=True)
     order_status = serializers.IntegerField(required=True, write_only=True)
     # 交易信息时自动创建的，故只能读取
-    transaction = TransactionSerializer(many=True, read_only=True)
+    transaction = TransactionSerializer(read_only=True)
 
     class Meta:
         model = Order

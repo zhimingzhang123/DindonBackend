@@ -36,5 +36,6 @@ class OrderPurchaseView(UpdateAPIView):
 
 
 class OrderProcessView(UpdateAPIView):
+    lookup_field = 'order'
     queryset = Transaction.objects.all()
     serializer_class = TransactionUpdateSerializer
