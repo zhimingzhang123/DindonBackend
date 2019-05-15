@@ -8,7 +8,7 @@ class SuperPermission(permissions.BasePermission):
         return request.user.user_type == UserType.Manager or request.user.is_superuser
 
 
-class OrderBasePermission(permissions.BasePermission):
+class UserBasePermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return not request.user.is_anonymous
 

@@ -1,12 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
-from rest_framework.response import Response
 
+from DinDonBackend.permissions import UserBasePermission, CustomerPermission, SuperPermission
 from Tables.filters import TableFilter
 from Tables.models import Table, BookTime
-from Tables.permissions import TableBasePermission
 from Tables.serializers import TableListSerializer, BookTableSerializer, BookTimeSerializer
+from Users.models import UserType
 
 
 class TableListView(ListAPIView):
@@ -23,30 +22,34 @@ class BookTimeListView(ListAPIView):
     """
     用户预订记录
     """
-    queryset = Table.objects.all()
+    queryset = BookTime.objects.all()
     serializer_class = BookTimeSerializer
-    permission_classes = (TableBasePermission,)
+    permission_classes = (UserBasePermission,)
 
     def get_queryset(self):
         user = self.request.user
-        if user:
-            queryset = BookTime.objects.filter(book_user=user)
-            return queryset
+        if user.is_superuser or user.user_type == UserType.Manager:
+            return BookTime.objects.all()
+        else:
+            return BookTime.objects.filter(book_user=user)
 
 
 class BookTableView(CreateAPIView):
     """创建预约"""
     queryset = BookTime.objects.all()
     serializer_class = BookTableSerializer
+    permission_classes = (CustomerPermission | SuperPermission,)
 
 
 class BookUpdateView(UpdateAPIView):
     """更新预约"""
     queryset = BookTime.objects.all()
     serializer_class = BookTableSerializer
+    permission_classes = (CustomerPermission | SuperPermission,)
 
 
-class BookDestoryView(DestroyAPIView):
+class BookDestroyView(DestroyAPIView):
     """删除预约"""
     queryset = BookTime.objects.all()
     serializer_class = None
+    permission_classes = (CustomerPermission | SuperPermission,)

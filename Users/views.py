@@ -6,8 +6,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from DinDonBackend.permissions import UserBasePermission
 from Users.models import VerifyCode, User
-from Users.serializers import SmsCodeSerializer, LoginWithSmsCodeSerializer, UserRegisterSerializer, UserChangePasswordSerializer
+from Users.serializers import SmsCodeSerializer, LoginWithSmsCodeSerializer, UserRegisterSerializer, \
+    UserChangePasswordSerializer
 
 
 class SmsCodeView(CreateAPIView):
@@ -65,7 +67,6 @@ class LoginWithSmsCodeView(CreateAPIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-
 class UserRegisterView(CreateAPIView):
     """
     用户注册
@@ -74,7 +75,6 @@ class UserRegisterView(CreateAPIView):
     serializer_class = UserRegisterSerializer
 
     def create(self, request, *args, **kwargs):
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = self.perform_create(serializer)
@@ -91,9 +91,10 @@ class UserRegisterView(CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save(password=make_password(serializer.validated_data['password']))
 
+
 class UserChangePasswordView(UpdateAPIView):
     serializer_class = UserChangePasswordSerializer
-    # TODO 设置权限，必须登录
+    permission_classes = (UserBasePermission,)
 
     def get_queryset(self):
         return User.objects.filter(phone_number=self.request.user.phone_number)
