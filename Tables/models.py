@@ -52,9 +52,9 @@ class Table(models.Model):
 
 
 class BookTime(models.Model):
-    table = models.ForeignKey(Table, on_delete=models.CASCADE, verbose_name="餐桌")
+    table = models.ForeignKey(Table, on_delete=models.CASCADE, verbose_name="餐桌", related_name="table")
 
-    book_user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="顾客")
+    book_user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="顾客", related_name="book_user")
 
     book_date = models.DateField(verbose_name="预定日期")
 

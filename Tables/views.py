@@ -5,14 +5,33 @@ from rest_framework.response import Response
 
 from Tables.filters import TableFilter
 from Tables.models import Table, BookTime
-from Tables.serializers import TableListSerializer, BookTableSerializer
+from Tables.permissions import TableBasePermission
+from Tables.serializers import TableListSerializer, BookTableSerializer, BookTimeSerializer
 
 
 class TableListView(ListAPIView):
+    """
+    餐桌预定记录
+    """
     queryset = Table.objects.all()
     serializer_class = TableListSerializer
     filter_class = TableFilter
     filter_backends = (DjangoFilterBackend,)
+
+
+class BookTimeListView(ListAPIView):
+    """
+    用户预订记录
+    """
+    queryset = Table.objects.all()
+    serializer_class = BookTimeSerializer
+    permission_classes = (TableBasePermission,)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user:
+            queryset = BookTime.objects.filter(book_user=user)
+            return queryset
 
 
 class BookTableView(CreateAPIView):

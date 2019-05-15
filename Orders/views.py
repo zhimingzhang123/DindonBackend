@@ -6,6 +6,9 @@ from Orders.serializers import OrderSerializer, TransactionSerializer, Transacti
 
 
 class OrderListView(ListAPIView):
+    """
+    当前用户订单列表
+    """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = (OrderBasePermission,)
@@ -24,6 +27,9 @@ class OrderRetrieveAPIView(RetrieveAPIView):
 
 
 class OrderCreateView(CreateAPIView):
+    """
+    创建订单
+    """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = (OrderBasePermission, OrderCreatePermission)
@@ -36,6 +42,9 @@ class OrderPurchaseView(UpdateAPIView):
 
 
 class OrderProcessView(UpdateAPIView):
+    """
+    订单处理
+    """
     lookup_field = 'order'
     queryset = Transaction.objects.all()
     serializer_class = TransactionUpdateSerializer
