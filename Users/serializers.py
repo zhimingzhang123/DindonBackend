@@ -2,6 +2,7 @@ import re
 from datetime import datetime, timedelta
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.validators import UniqueValidator
@@ -24,26 +25,26 @@ class SmsCodeSerializer(serializers.Serializer):
             'blank': "手机号不能为空"
         }
     )
-    is_register = serializers.BooleanField()
+    purpose = serializers.IntegerField(help_text='验证码用途【0-注册, 1-登录, 2-修改密码】')
 
     def validate(self, attrs):
         phone_number = attrs['phone_number']
-        is_register = attrs['is_register']
+        purpose = attrs['purpose']
 
         # 验证手机号是否合法
         if not re.match(REGEX_PHONE, phone_number):
             raise serializers.ValidationError("手机号格式错误")
 
         user_count = User.objects.filter(phone_number=phone_number).count()
-        if not user_count and not is_register:
+        if not user_count and purpose == 1:
             raise serializers.ValidationError('该手机号未进行注册')
-        elif user_count and is_register:
+        elif user_count and purpose == 0:
             raise serializers.ValidationError('该手机号已经被注册')
 
         # 设置60秒内不能重复发送验证码
         one_minute_ago = datetime.now() - timedelta(minutes=1)
         query = VerifyCode.objects.filter(phone_number=phone_number, add_time__gt=one_minute_ago,
-                                          is_register=is_register).order_by('-add_time')
+                                          purpose=purpose).order_by('-add_time')
         if query.count():
             raise serializers.ValidationError('两次发送短信时间间隔小于60秒')
 
@@ -62,7 +63,7 @@ class LoginWithSmsCodeSerializer(serializers.ModelSerializer):
         # 验证码5分钟内有效
         five_minutes_ago = datetime.now() - timedelta(minutes=5)
         query = VerifyCode.objects.filter(add_time__gt=five_minutes_ago, phone_number=phone_number,
-                                          is_register=False).order_by(
+                                          purpose=1).order_by(
             '-add_time')
         if not query or query.first().code != code:
             raise serializers.ValidationError('验证码错误')
@@ -127,7 +128,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         # 验证码5分钟内有效
         five_minutes_ago = datetime.now() - timedelta(minutes=5)
-        query = VerifyCode.objects.filter(add_time__gt=five_minutes_ago, phone_number=phone_number, is_register=True)
+        query = VerifyCode.objects.filter(add_time__gt=five_minutes_ago, phone_number=phone_number, purpose=0)
         if query:
             if query.first().code != code:
                 raise serializers.ValidationError('验证码错误')
@@ -141,3 +142,36 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=20, required=True, write_only=True, help_text='旧密码')
+    new_password = serializers.CharField(max_length=20, required=True, write_only=True, help_text='新密码')
+    code = serializers.CharField(max_length=6, required=True, write_only=True, help_text='验证码')
+
+    def validate(self, attrs):
+        old_password = attrs.pop('old_password')
+        phone_number = self.context['request'].user.username
+
+        if not authenticate(username=phone_number, password=old_password):
+            raise serializers.ValidationError('旧密码输入错误')
+
+        new_password = attrs.pop('new_password')
+        code = attrs.pop('code')
+
+        five_minutes_ago = datetime.now() - timedelta(minutes=5)
+        query = VerifyCode.objects.filter(add_time__gt=five_minutes_ago, phone_number=phone_number,  purpose=2).order_by('-add_time')
+        if query:
+            if query.first().code != code:
+                raise serializers.ValidationError('验证码错误')
+
+        attrs['password'] = new_password
+        del code
+        del old_password
+        del new_password
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.password = make_password(validated_data['password'])
+        instance.save()
+        return instance
