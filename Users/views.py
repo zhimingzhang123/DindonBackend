@@ -1,13 +1,13 @@
 import random
 from django.contrib.auth.hashers import make_password
 
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from Users.models import VerifyCode, User
-from Users.serializers import SmsCodeSerializer, LoginWithSmsCodeSerializer, UserRegisterSerializer
+from Users.serializers import SmsCodeSerializer, LoginWithSmsCodeSerializer, UserRegisterSerializer, UserChangePasswordSerializer
 
 
 class SmsCodeView(CreateAPIView):
@@ -18,7 +18,7 @@ class SmsCodeView(CreateAPIView):
     serializer_class = SmsCodeSerializer
 
     def post(self, request, *args, **kwargs):
-        is_register = request.data.get('is_register', False)
+        purpose = request.data.get('purpose', 0)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -34,7 +34,7 @@ class SmsCodeView(CreateAPIView):
         try:
             VerifyCode.objects.create(phone_number=phone_number,
                                       code=code,
-                                      is_register=is_register
+                                      purpose=purpose
                                       )
             return Response({"status": "发送成功"}, status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -90,3 +90,24 @@ class UserRegisterView(CreateAPIView):
 
     def perform_create(self, serializer):
         return serializer.save(password=make_password(serializer.validated_data['password']))
+
+class UserChangePasswordView(UpdateAPIView):
+    serializer_class = UserChangePasswordSerializer
+    # TODO 设置权限，必须登录
+
+    def get_queryset(self):
+        return User.objects.filter(phone_number=self.request.user.phone_number)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response({'message': '密码修改成功'}, status=status.HTTP_200_OK)

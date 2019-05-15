@@ -49,6 +49,25 @@ class User(AbstractUser):
         verbose_name_plural = verbose_name
 
 
+class CodeType:
+    register = 0
+    login = 1
+    resetpwd = 2
+
+    CodeTypeChoice = (
+        (0, '注册'),
+        (1, '登录'),
+        (2, '修改密码'),
+    )
+
+    @staticmethod
+    def code_type(type_id):
+        return (
+            '注册',
+            '登录',
+            '修改密码'
+        )[type_id]
+
 class VerifyCode(models.Model):
     """
     短信验证码
@@ -56,7 +75,7 @@ class VerifyCode(models.Model):
     code = models.CharField(max_length=10, verbose_name="验证码")
     phone_number = models.CharField(max_length=11, verbose_name="电话")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
-    is_register = models.BooleanField(default=False, null=True, verbose_name='是否为注册验证码')
+    purpose = models.IntegerField(default=CodeType.register, choices=CodeType.CodeTypeChoice, verbose_name='验证码的用途')
 
     class Meta:
         verbose_name = "短信验证码"
