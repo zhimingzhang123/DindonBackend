@@ -1,3 +1,4 @@
+alipay-sdk-python==3.3.17
 aliyun-python-sdk-core==2.13.4
 aliyunsdkcore==1.0.3
 certifi==2019.3.9
@@ -16,10 +17,12 @@ Jinja2==2.10.1
 jmespath==0.9.4
 Markdown==3.1
 MarkupSafe==1.1.1
+pyasn1==0.4.5
 pycrypto==2.6.1
 PyJWT==1.7.1
 pytz==2019.1
 requests==2.21.0
+rsa==4.0
 sqlparse==0.3.0
 uritemplate==3.0.0
 urllib3==1.24.3
