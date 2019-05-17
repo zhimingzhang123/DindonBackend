@@ -4,12 +4,14 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.utils import json
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from DinDonBackend.permissions import UserBasePermission
 from Users.models import VerifyCode, User
 from Users.serializers import SmsCodeSerializer, LoginWithSmsCodeSerializer, UserRegisterSerializer, \
     UserChangePasswordSerializer
+from Utils.SMS import SMS
 
 
 class SmsCodeView(CreateAPIView):
@@ -27,18 +29,20 @@ class SmsCodeView(CreateAPIView):
 
         phone_number = serializer.validated_data['phone_number']
 
-        # 生成6位随机验证码
-        code = "%06d" % random.randint(0000, 9999)
-        # 调试使用
-        code = "123456"
-        # TODO 调用第三方发送短信验证码的接口
+        code = "%06d" % random.randint(000000, 999999)
 
         try:
-            VerifyCode.objects.create(phone_number=phone_number,
-                                      code=code,
-                                      purpose=purpose
-                                      )
-            return Response({"status": "发送成功"}, status=status.HTTP_201_CREATED)
+            sms = SMS()
+            res = sms.send_sms(phone_number, code)
+            res = json.loads(res, encoding='utf-8')
+            if res['Code'] == "OK":
+                VerifyCode.objects.create(phone_number=phone_number,
+                                          code=code,
+                                          purpose=purpose
+                                          )
+                return Response({"status": "发送成功"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"status": "发送失败"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"status": "发送失败"}, status=status.HTTP_400_BAD_REQUEST)
 
