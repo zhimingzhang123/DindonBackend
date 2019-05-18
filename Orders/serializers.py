@@ -40,11 +40,6 @@ class TransactionSerializer(serializers.ModelSerializer):
         exclude = ('id', 'order')
 
 
-# TODO:支付API的内容
-class TransactionPurChaseSerializer(serializers.ModelSerializer):
-    pass
-
-
 class TransactionUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
@@ -70,10 +65,10 @@ class TransactionUpdateSerializer(serializers.ModelSerializer):
             # 下单->取消
             if instance.order_status == OrderStatus.Ordered and order_status == OrderStatus.Canceled:
                 instance.order_status = order_status
-            # 下单->支付
-            if instance.order_status == OrderStatus.Ordered and order_status == OrderStatus.Payed:
-                instance.order_status = order_status
-                instance.order_pay_time = datetime.now()
+            # # 下单->支付
+            # if instance.order_status == OrderStatus.Ordered and order_status == OrderStatus.Payed:
+            #     instance.order_status = order_status
+            #     instance.order_pay_time = datetime.now()
             # 支付->处理
             if instance.order_status == OrderStatus.Payed and order_status == OrderStatus.Processing:
                 instance.order_status = order_status
